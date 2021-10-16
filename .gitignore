@@ -2,3 +2,5 @@
 /__pycache__/*
 
 /library/__pycache__/
+
+/imdb-db_key.json

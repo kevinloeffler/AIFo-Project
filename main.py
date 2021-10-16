@@ -16,15 +16,16 @@ SESSION_ID = 'me'
 text_to_be_analyzed = 'What was the most popular movie in the year 2000?'
 
 ### Session
-sessionCliend = dialogflow.SessionsClient()
-session = sessionCliend.session_path(DIALOGFLOW_PROJECT_ID, SESSION_ID)
+sessionClient = dialogflow.SessionsClient()
+session = sessionClient.session_path(DIALOGFLOW_PROJECT_ID, SESSION_ID)
 sessionIsActive = True
 
 ### Handle Response
 def handleResponse(response):
+    print(response.query_result.fulfillment_text)
     Intents = IntentsClass()
     intentId: str = Res.getIntent(response)
-    Intents.handleIntents(intentId)
+    Intents.handleIntents(intentId, response)
 
 
 User = UserClass()
@@ -43,9 +44,10 @@ while sessionIsActive:
         textInput = dialogflow.TextInput(text=userInput, language_code=DIALOGFLOW_LANGUAGE_CODE)
         queryInput = dialogflow.QueryInput(text=textInput)
         try:
-            response = sessionCliend.detect_intent(session=session, query_input=queryInput)
-        except InvalidArgument:
-            raise
+            response = sessionClient.detect_intent(
+                request={"session": session, "query_input": queryInput})
+        except Exception as e:
+            print(e)
         handleResponse(response)
 
 

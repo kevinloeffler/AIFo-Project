@@ -1,0 +1,5 @@
+SELECT tb.primaryTitle, tr.averageRating from title_ratings tr join title_basics tb on tb.tconst = tr.tconst where tb.startYear = '1994' order by tr.numVotes desc, tr.averageRating desc limit 1;
+
+SELECT tb.primaryTitle, tr.averageRating from title_ratings tr join title_basics tb on tb.tconst = tr.tconst order by tr.numVotes desc, tr.averageRating desc limit 5;
+
+select tb.primaryTitle, nb.primaryName, nb.birthyear, nb.deathyear from title_principals tp join name_basics nb on tp.nconst = nb.nconst join title_basics tb on tb.tconst = tp.tconst where tp.category='self' limit 20;
