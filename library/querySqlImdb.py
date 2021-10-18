@@ -5,11 +5,11 @@ Created on Sat Oct 16 17:01:27 2021
 @author: Benjamin Plattner
 """
 
-from google.cloud.sql.connector import connector
 import os
+import library.debug as DEBUG
+from google.cloud.sql.connector import connector
 
-
-def query_sql_imdb(sql_query):
+def query_sql_imdb(query):
 
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'imdb-db_key.json'
 
@@ -25,12 +25,15 @@ def query_sql_imdb(sql_query):
     cursor = conn.cursor()
 
     try:
-        cursor.execute(sql_query)
+        cursor.execute(query)
         results = cursor.fetchall()
-        for row in results:
-            print(row)
+        if len(results) == 0:
+            return 0
+        else:
+            return results
     except Exception as e:
-        print(e, '\n\nInvalid query, try again')
+        DEBUG.log(f'DB Query Error: {e}')
+        return -1
     finally:
         cursor.close()
         conn.close()
