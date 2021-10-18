@@ -11,7 +11,7 @@ import os
 
 def query_sql_imdb(sql_query):
 
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '../imdb-db_key.json'
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'imdb-db_key.json'
 
     conn = connector.connect(
         "glass-arcana-329015:us-central1:imdb-db",
