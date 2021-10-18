@@ -1,9 +1,18 @@
 import os
+import sys
+import library.debug as DEBUG
 import library.queryHelpers as Res
 from library.Intents import Intents as IntentsClass
 from library.User import User as UserClass
 from library.Ressources import Ressources as Ressources
 from google.cloud import dialogflow
+
+### Debug Mode
+if '-d' in str(sys.argv):
+    DEBUG.init(True)
+    print('DEBUG: Running in Debug Mode')
+else:
+    DEBUG.init(False)
 
 ### Project
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'private_key.json'
