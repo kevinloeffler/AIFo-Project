@@ -28,13 +28,12 @@ sessionIsActive = True
 
 ### Handle Response
 def handleResponse(response):
-    print(response.query_result.fulfillment_text)
-    Intents = IntentsClass()
     intentId: str = Res.getIntent(response)
     Intents.handleIntents(intentId, response)
 
 
 User = UserClass()
+Intents = IntentsClass()
 print(Ressources['welcomeMessage']())
 
 while sessionIsActive:
