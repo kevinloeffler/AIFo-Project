@@ -5,6 +5,7 @@ echo ""
 
 pip install google-api-core
 pip install google-cloud-dialogflow
+pip install cloud-sql-python-connector
 
 echo ""
 
