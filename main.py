@@ -21,9 +21,6 @@ LOCATION_ID = 'europe-west1'
 DIALOGFLOW_LANGUAGE_CODE = 'en'
 SESSION_ID = 'me'
 
-
-text_to_be_analyzed = 'What was the most popular movie in the year 2000?'
-
 ### Session
 sessionClient = dialogflow.SessionsClient()
 session = sessionClient.session_path(DIALOGFLOW_PROJECT_ID, SESSION_ID)
