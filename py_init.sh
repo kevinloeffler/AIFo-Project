@@ -7,6 +7,7 @@ pip install google-api-core
 pip install google-cloud-dialogflow
 pip install cloud-sql-python-connector
 pip install pg8000
+pip install colorama
 
 echo ""
 
