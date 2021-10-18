@@ -36,6 +36,7 @@ while sessionIsActive:
 
     if userInput in User.commands['quit']:
         sessionIsActive = False
+        break
     elif userInput in User.commands['help']:
         print(Ressources['help']())
     elif userInput == '':
