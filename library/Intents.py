@@ -1,4 +1,5 @@
 import library.querySqlImdb as qsi
+import library.debug as DEBUG
 # import json
 # TODO use json to extract values
 
@@ -12,10 +13,11 @@ class Intents():
     ###### Intent Handlers
 
     def defaultWeclomeIntent(response):
-        print('Default Welcome Intent')
+        DEBUG.log('Default Welcome Intent')
 
     def rankingIntent(response):
-        print('Ranking Intent')
+        DEBUG.log('Ranking Intent')
+
         try:
             year = int(response.query_result.output_contexts[0].parameters['year'][0])
         except IndexError:
@@ -40,7 +42,7 @@ class Intents():
                 print('Specify the year as YYYY')
 
     def defaultFallbackIntent(response):
-        print('Default Fallback Intent')
+        DEBUG.log('Default Fallback Intent')
 
 
     ###### Intent Map
