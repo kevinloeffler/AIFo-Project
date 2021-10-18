@@ -14,6 +14,7 @@ class Intents():
 
     def defaultWeclomeIntent(response):
         DEBUG.log('Default Welcome Intent')
+        print(response.query_result.fulfillment_text)
 
     def rankingIntent(response):
         DEBUG.log('Ranking Intent')
@@ -21,28 +22,36 @@ class Intents():
         try:
             year = int(response.query_result.output_contexts[0].parameters['year'][0])
         except IndexError:
-            year = []
-        if(year == []):
-            # test query, can be deleted
-            query = """SELECT tb.primaryTitle, tr.averageRating from
-                    title_ratings tr join title_basics tb on
-                    tb.tconst = tr.tconst order by tr.numVotes desc,
-                    tr.averageRating desc limit 5;"""
-            qsi.query_sql_imdb(query)
+            year = -1
+
+        if(year == -1):
+            DEBUG.log('Empty Year')
+            print('What year?')
         else:
-            if(len(str(year)) == 4):
-                query = f"""SELECT tb.primaryTitle, tr.averageRating from title_ratings tr
-                        join title_basics tb on tb.tconst = tr.tconst where
-                        tb.startYear = \'{year}\' order by tr.numVotes desc,
-                        tr.averageRating desc limit 1;"""
-                qsi.query_sql_imdb(query)
-                # TODO message if emtpy query (e.g. year = 2049)
+            query = f"""SELECT
+            tb.primaryTitle,
+            tr.averageRating
+            FROM title_ratings tr
+            JOIN title_basics tb
+            ON tb.tconst = tr.tconst
+            WHERE tb.startYear = \'{year}\'
+            ORDER BY tr.numVotes DESC,
+            tr.averageRating DESC
+            LIMIT 1;"""
+
+            result = qsi.query_sql_imdb(query)
+
+            if result == -1:
+                print('An error occured')
+            elif result == 0:
+                print(f'No movie found for the year {year}')
             else:
-                # TODO
-                print('Specify the year as YYYY')
+                print(f"The best movie in {year} was '{result[0][0]}' with an average ranking of '{result[0][1]}'")
+
 
     def defaultFallbackIntent(response):
         DEBUG.log('Default Fallback Intent')
+        print(response.query_result.fulfillment_text)
 
 
     ###### Intent Map
