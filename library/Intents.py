@@ -48,6 +48,77 @@ class Intents():
             else:
                 print(f"The best movie in {year} was '{result[0][0]}' with an average ranking of '{result[0][1]}'")
 
+    def directorIntent(response):
+        DEBUG.log('Director Intent')
+
+        directors = []
+        limit = None
+
+        try:
+            directorsProto = response.query_result.parameters['director']
+            for director in directorsProto:
+                directors.append(director['name'])
+        except Exception as e:
+            DEBUG.log(e)
+            print('Error: No Director given')
+
+        try:
+            limit = response.query_result.parameters['numberOfMovies']
+        except:
+            raise
+
+        if limit and len(directors) == 1:
+            query = f"""
+            SELECT tb.primarytitle
+            FROM title_basics AS tb
+            INNER JOIN title_ratings tr ON (tb.tconst = tr.tconst)
+            INNER JOIN (
+              SELECT tp.tconst, tp.category
+              FROM title_principals AS tp
+              WHERE nconst = (
+                SELECT nb.nconst
+                FROM name_basics AS nb
+                WHERE primaryname = '{directors[0]}'
+              )
+            ) AS principals ON (tb.tconst = principals.tconst)
+            WHERE tb.titletype = 'movie'
+            ORDER BY tr.averagerating DESC
+            LIMIT {limit};
+            """
+            result = qsi.query_sql_imdb(query)
+
+            print(f'The top {limit} movies directed by {directors[0]} are:')
+            for movie in result:
+                print(movie[0])
+
+        elif limit:
+            print(f'Do query with directors: {directors} and limit: {limit}')
+
+        elif len(directors) == 1:
+            query = f"""
+            SELECT tb.primarytitle
+            FROM title_basics AS tb
+            INNER JOIN title_ratings tr ON (tb.tconst = tr.tconst)
+            INNER JOIN (
+              SELECT tp.tconst, tp.category
+              FROM title_principals AS tp
+              WHERE nconst = (
+                SELECT nb.nconst
+                FROM name_basics AS nb
+                WHERE primaryname = '{directors[0]}'
+              )
+            ) AS principals ON (tb.tconst = principals.tconst)
+            WHERE tb.titletype = 'movie'
+            ORDER BY tr.averagerating DESC;
+            """
+            result = qsi.query_sql_imdb(query)
+
+            print(f'{directors[0]} directed the following movies:')
+            for movie in result:
+                print(movie[0])
+
+        else:
+            print(f'Do query with directors: {directors}')
 
     def defaultFallbackIntent(response):
         DEBUG.log('Default Fallback Intent')
@@ -60,6 +131,7 @@ class Intents():
         '5470f7a9-e155-4dcb-9cf3-ae8f0a213738': defaultWeclomeIntent,
         'ca567445-526c-488a-a44f-b17c2c226f3d': rankingIntent,
         '43828901-51a8-40bb-a234-31ddc371f216': defaultFallbackIntent,
+        '8ce7a2cc-290d-4f8c-b0ef-8c7a3b549975': directorIntent,
     }
 
     def handleIntents(self, intentId: str, response: str):
