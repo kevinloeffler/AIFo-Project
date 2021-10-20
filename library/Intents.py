@@ -20,7 +20,7 @@ class Intents():
         DEBUG.log('Ranking Intent')
 
         try:
-            year = int(response.query_result.output_contexts[0].parameters['year'][0])
+            year = int(response.query_result.parameters['year'][0])
         except IndexError:
             year = -1
 
@@ -57,19 +57,22 @@ class Intents():
         try:
             directorsProto = response.query_result.parameters['director']
             for director in directorsProto:
-                directors.append(director['name'])
+                directors.append(director['name']['name'].lower())
         except Exception as e:
             DEBUG.log(e)
             print('Error: No Director given')
 
         try:
             limit = response.query_result.parameters['numberOfMovies']
-        except:
-            raise
+
+            if(limit):
+                limit = int(limit['top_number'])
+        except Exception as e:
+            print(e)
 
         if limit and len(directors) == 1:
             query = f"""
-            SELECT tb.primarytitle
+            SELECT tb.primarytitle, tr.averagerating
             FROM title_basics AS tb
             INNER JOIN title_ratings tr ON (tb.tconst = tr.tconst)
             INNER JOIN (
@@ -78,25 +81,30 @@ class Intents():
               WHERE nconst = (
                 SELECT nb.nconst
                 FROM name_basics AS nb
-                WHERE primaryname = '{directors[0]}'
+                WHERE lower(nb.primaryname) = '{directors[0]}'
+                AND (nb.primaryprofession LIKE '%director%'
+                OR nb.primaryprofession LIKE '%producer%')
               )
             ) AS principals ON (tb.tconst = principals.tconst)
             WHERE tb.titletype = 'movie'
-            ORDER BY tr.averagerating DESC
+            ORDER BY tr.numVotes DESC, tr.averagerating DESC
             LIMIT {limit};
             """
             result = qsi.query_sql_imdb(query)
 
-            print(f'The top {limit} movies directed by {directors[0]} are:')
-            for movie in result:
-                print(movie[0])
+            if(result == 0 or result == -1):
+                print(f'No results for {directors[0].title()}')
+            else:
+                print(f'The top {limit} movies directed by {directors[0].title()} are:')
+                for movie in result:
+                    print(f'{movie[0]}, rated: {movie[1]}')
 
         elif limit:
             print(f'Do query with directors: {directors} and limit: {limit}')
 
         elif len(directors) == 1:
             query = f"""
-            SELECT tb.primarytitle
+            SELECT tb.primarytitle, tr.averagerating
             FROM title_basics AS tb
             INNER JOIN title_ratings tr ON (tb.tconst = tr.tconst)
             INNER JOIN (
@@ -105,17 +113,22 @@ class Intents():
               WHERE nconst = (
                 SELECT nb.nconst
                 FROM name_basics AS nb
-                WHERE primaryname = '{directors[0]}'
+                WHERE lower(nb.primaryname) = '{directors[0]}'
+                AND (nb.primaryprofession LIKE '%director%'
+                OR nb.primaryprofession LIKE '%producer%')
               )
             ) AS principals ON (tb.tconst = principals.tconst)
             WHERE tb.titletype = 'movie'
-            ORDER BY tr.averagerating DESC;
+            ORDER BY tb.primarytitle;
             """
             result = qsi.query_sql_imdb(query)
 
-            print(f'{directors[0]} directed the following movies:')
-            for movie in result:
-                print(movie[0])
+            if(result == 0 or result == -1):
+                print(f'No results for {directors[0].title()}')
+            else:
+                print(f'{directors[0].title()} directed the following movies:')
+                for movie in result:
+                    print(f'{movie[0]}, rated: {movie[1]}')
 
         else:
             print(f'Do query with directors: {directors}')
