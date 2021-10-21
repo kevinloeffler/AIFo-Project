@@ -63,12 +63,9 @@ class Intents():
             print('Error: No Director given')
 
         try:
-            limit = response.query_result.parameters['numberOfMovies']
-
-            if(limit):
-                limit = int(limit['top_number'])
-        except Exception as e:
-            print(e)
+            limit = int(response.query_result.parameters['numberOfMovies'])
+        except ValueError as ve:
+            DEBUG.log('No limit given')
 
         if limit and len(directors) == 1:
             query = f"""
@@ -82,8 +79,7 @@ class Intents():
                 SELECT nb.nconst
                 FROM name_basics AS nb
                 WHERE lower(nb.primaryname) = '{directors[0]}'
-                AND (nb.primaryprofession LIKE '%director%'
-                OR nb.primaryprofession LIKE '%producer%')
+                AND nb.primaryprofession LIKE '%director%'
               )
             ) AS principals ON (tb.tconst = principals.tconst)
             WHERE tb.titletype = 'movie'
@@ -114,8 +110,7 @@ class Intents():
                 SELECT nb.nconst
                 FROM name_basics AS nb
                 WHERE lower(nb.primaryname) = '{directors[0]}'
-                AND (nb.primaryprofession LIKE '%director%'
-                OR nb.primaryprofession LIKE '%producer%')
+                AND nb.primaryprofession LIKE '%director%'
               )
             ) AS principals ON (tb.tconst = principals.tconst)
             WHERE tb.titletype = 'movie'
