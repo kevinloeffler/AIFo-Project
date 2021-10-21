@@ -6,4 +6,4 @@ def init(mode):
 
 def log(message):
     if DEBUG_MODE:
-        print(Fore.YELLOW + 'DEBUG: ' + message + Style.RESET_ALL)
+        print(Fore.YELLOW + 'DEBUG: ' + str(message) + Style.RESET_ALL)
