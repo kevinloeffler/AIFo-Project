@@ -57,7 +57,7 @@ class Intents():
         try:
             directorsProto = response.query_result.parameters['director']
             for director in directorsProto:
-                directors.append(director['name']['name'].lower())
+                directors.append(director['name'].lower())
         except Exception as e:
             DEBUG.log(e)
             print('Error: No Director given')
@@ -87,7 +87,7 @@ class Intents():
               )
             ) AS principals ON (tb.tconst = principals.tconst)
             WHERE tb.titletype = 'movie'
-            ORDER BY tr.numVotes DESC, tr.averagerating DESC
+            ORDER BY tr.averagerating DESC
             LIMIT {limit};
             """
             result = qsi.query_sql_imdb(query)
@@ -145,6 +145,7 @@ class Intents():
         'ca567445-526c-488a-a44f-b17c2c226f3d': rankingIntent,
         '43828901-51a8-40bb-a234-31ddc371f216': defaultFallbackIntent,
         '8ce7a2cc-290d-4f8c-b0ef-8c7a3b549975': directorIntent,
+        '0d912c47-c4a0-4089-82ac-16e7f7136200': directorIntent,
     }
 
     def handleIntents(self, intentId: str, response: str):
