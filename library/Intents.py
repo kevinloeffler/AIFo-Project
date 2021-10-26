@@ -1,7 +1,5 @@
 import library.querySqlImdb as qsi
 import library.debug as DEBUG
-# import json
-# TODO use json to extract values
 
 class Intents():
     '''This class maps and handles all different intent types.'''
