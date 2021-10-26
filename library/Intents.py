@@ -128,6 +128,38 @@ class Intents():
         else:
             print(f'Do query with directors: {directors}')
 
+    def movieInfoIntent(response):
+        DEBUG.log('Movie Info Intent')
+
+        title = ''
+
+        try:
+            title = response.query_result.parameters['movie'].lower()
+        except Exception as e:
+            DEBUG.log(e)
+
+        DEBUG.log(title)
+
+        query = f"""
+        SELECT tb.originaltitle, tb.startyear, tb.runtimeminutes, tb.genres, nb.primaryname
+        FROM title_basics AS tb
+        INNER JOIN title_crew AS tc
+        ON tb.tconst = tc.tconst
+        LEFT JOIN name_basics AS nb
+        ON tc.directors = nb.nconst
+        WHERE lower(tb.primarytitle) = '{title}'
+        AND tb.titletype = 'movie';
+        """
+
+        result = qsi.query_sql_imdb(query)
+
+        if(result == 0 or result == -1):
+            print(f"No results for '{title}'")
+        else:
+            genres = result[0][3].replace(';', ', ')
+            print(f"{result[0][0]} was directed by {result[0][4]} and released in {result[0][1]}")
+            print(f"The movie ran for {result[0][2]} minutes and is classified as: {genres}")
+
     def defaultFallbackIntent(response):
         DEBUG.log('Default Fallback Intent')
         print(response.query_result.fulfillment_text)
@@ -141,6 +173,7 @@ class Intents():
         '43828901-51a8-40bb-a234-31ddc371f216': defaultFallbackIntent,
         '8ce7a2cc-290d-4f8c-b0ef-8c7a3b549975': directorIntent,
         '0d912c47-c4a0-4089-82ac-16e7f7136200': directorIntent,
+        '14b96678-2374-4949-98f1-bc5e873b2176': movieInfoIntent,
     }
 
     def handleIntents(self, intentId: str, response: str):
