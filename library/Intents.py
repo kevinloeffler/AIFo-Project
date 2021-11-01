@@ -55,15 +55,17 @@ class Intents():
         try:
             directorsProto = response.query_result.parameters['director']
             for director in directorsProto:
-                directors.append(director['name'].lower())
+                directors.append(director['name']['name'].lower())
         except Exception as e:
             DEBUG.log(e)
             print('Error: No Director given')
 
+        limit = response.query_result.parameters['numberOfMovies']
         try:
-            limit = int(response.query_result.parameters['numberOfMovies'])
-        except ValueError as ve:
+            limit = int(limit['top_number'])
+        except TypeError as e:
             DEBUG.log('No limit given')
+            pass
 
         if limit and len(directors) == 1:
             query = f"""
